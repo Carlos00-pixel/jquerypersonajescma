@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JqueryApp</title>
+    <link rel="shortcut icon" href="images/logoJQuery.jpg">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="content"></div>
+    <div style="text-align:center; margin-top: 40px;">
+        <h1>Detalles Series: <span id="valor"></span></h1>
+        <div class="card" style= "width: 18rem; margin:0 auto">
+            <div id="contenido"></div>
+        </div>
+    </div>
+</body>
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/Global.js"></script>
+<script>
+    $("#content").load("menuNavbar.html");
+    $(document).ready(function() {
+        //Con esta variable recuperamos el valor o valores interesados 
+        //obviando los anteriores al ?
+        var valorUbicacion = window.location.search;
+        console.log(valorUbicacion);
+
+        //Para acceder a los parámetros crearemos un objeto de tipo URLSearchParams 
+        //y usaremos el método get() para obtener cada uno de los valores
+
+        //URLSearchParams define métodos útiles para trabajar 
+        //con los parámetros de búsqueda de una URL.
+
+        const urlParams = new URLSearchParams(valorUbicacion);
+
+        //Accedemos a los valores con un get y pasandole 
+        //el valor que le hayamos indicado en la ruta
+        var valores = urlParams.get("idserie");
+
+        console.log(valores);
+        
+        $("#valor").html(valores);
+
+        $.getJSON(Global.url+"/api/Series/"+valores, function(data) {
+            var html = "";
+                html += "<img src='" + data.imagen + "' class='card-img-top'/>";
+                html += "<div class='card-body'>";
+                html += "<h5 class='card-title'>" + data.nombre + "</h5>";
+                html += "<p class='card-text'> IMDB: " + data.puntuacion + "</p>";
+                html += "<a class='btn btn-success' href='/detallesPersonajes.html?idserie="+ data.idSerie +"'>Personajes</a>";
+                html += "</div>";
+            $("#contenido").html(html);
+        });//Cierre getJSON
+
+    });//Cierre document.ready
+</script>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JqueryApp</title>
+    <link rel="shortcut icon" href="images/logoJQuery.jpg">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="content"></div>
+    <div style="text-align:center; margin-top: 40px;">
+        <h1 style="color: blue;">Nuevo Personaje</h1>
+        <form style= "width:600px; margin:0 auto">
+            <label>Nombre</label><br/>
+            <input type="text" class='form-control' id="cajaNombre"/><br/>
+
+            <label>Imagen</label><br/>
+            <input type="text" class='form-control' id="cajaImagen"/><br/>
+
+            <label>Serie</label><br/>
+            <select class='form-control' id="cajaSelect">
+            </select>
+
+            <button type="button" class="btn btn-success" style="margin-top: 10px;" id="botonInsertar">Insertar Personaje</button>
+        </form>
+    </div>
+</body>
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/Global.js"></script>
+<script>
+    $("#content").load("menuNavbar.html");
+    
+    $(document).ready(function(){
+
+        var request = "/api/Series";
+
+            $.ajax({
+                "url": Global.url + request,
+                "method": "GET",
+                "datatype": "json",
+                success: function(data){
+                    var html = "";
+                    $.each(data,function(index,serie){
+                        html += "<option key='"+serie.idSerie+"' value='"+serie.idSerie+"'>"+serie.nombre+"</option>";
+                    });//Cierre each
+                    $("#cajaSelect").html(html);
+                }
+            });//Cierre ajax
+
+        $("#botonInsertar").click(function() {
+            var request = "/api/Personajes";
+
+            var nom = $("#cajaNombre").val();
+            var img = $("#cajaImagen").val();
+            var ser = parseInt($("#cajaSelect").val());
+
+            var serie = new Object();
+
+            serie.nombre = nom;
+            serie.imagen = img;
+            serie.idSerie = ser;
+
+            var dataJson = JSON.stringify(serie);
+            console.log(dataJson);
+
+            $.ajax({
+                "url": Global.url + request,
+                "type": "POST",
+                "data": dataJson,
+                "contentType": "application/json",
+                success: function(){
+                    console.log("Insertado");
+                    $(location).attr('href', '/home.html');
+                }
+            });//Cierre ajax
+        });//Cierre botonInsertar
+
+    });//Cierre document.ready
+</script>
+</html>

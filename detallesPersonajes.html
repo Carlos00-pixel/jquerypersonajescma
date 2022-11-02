@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JqueryApp</title>
+    <link rel="shortcut icon" href="images/logoJQuery.jpg">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="content"></div>
+    <div style="text-align:center; margin-top: 40px;">
+        <h1>Detalles Personaje: <span id="id"></span></h1>
+        <table id="tablaPersonajes" class='table table-dark' style= "width:1100px; margin: 0 auto; margin-top:10px; text-align:center">
+            <thead>
+                <tr>
+                    <th>PERSONAJE</th>
+                    <th>IMAGEN</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</body>
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/Global.js"></script>
+<script>
+    $("#content").load("menuNavbar.html");
+    $(document).ready(function(){
+        var valorUbicacion = window.location.search;
+
+        const urlParams = new URLSearchParams(valorUbicacion);
+
+        var numeroId = urlParams.get("idserie");
+        
+        $("#id").html(numeroId);
+
+        var request = "/api/Series/PersonajesSerie/"+numeroId;
+
+        console.log(Global.url + request);
+
+            $.ajax({
+                "url": Global.url + request,
+                "method": "GET",
+                "datatype": "json",
+                success: function(data){
+                    var html = "";
+                    $("#tablaPersonajes tbody").text("");
+                    $.each(data,function(index,personaje){
+                        html += "<tr>";
+                        html += "<td>"+personaje.nombre+"</td>";
+                        html += "<td> <img src='"+personaje.imagen+"' style='width:250px;'/> </td>";
+                        html += "</tr>";
+                    });//Cierre each
+                    $("#tablaPersonajes tbody").html(html);
+                }
+            });//Cierre ajax
+
+    });//Cierre document.ready
+    
+</script>
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JqueryApp</title>
+    <link rel="shortcut icon" href="images/logoJQuery.jpg">
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="content"></div>
+    <div style="text-align:center; margin-top: 40px;">
+        <h1>Modificar Personajes y series</h1>
+        <form style="width:600px; margin:0 auto">
+
+            <label>Seleccione una serie:</label><br/>
+            <select class='form-control' id="cajaIdSerieRef">
+            </select><br/>
+
+            <label>Seleccione un personaje:</label><br/>
+            <select class='form-control' id="cajaIdPersonajeRef">
+            </select><br/>
+
+            <button type="button" class='btn btn-info' id="modificarPersonajes">Guardar Cambios</button>
+        </form>
+    </div>
+</body>
+<script src="js/jquery-3.6.1.min.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/Global.js"></script>
+<script>
+    $("#content").load("menuNavbar.html");
+    $(document).ready(function(){
+
+        var requestSeries = "/api/Series";
+
+            $.ajax({
+                "url": Global.url + requestSeries,
+                "method": "GET",
+                "datatype": "json",
+                success: function(data){
+                    var html = "";
+                    $.each(data,function(index,serie){
+                        html += "<option key='"+serie.idSerie+"' value='"+serie.idSerie+"'>"+serie.nombre+"</option>";
+                    });//Cierre each
+                    $("#cajaIdSerieRef").html(html);
+                }
+            });//Cierre ajax
+
+            var requestPersonajes = "/api/Personajes";
+
+                $.ajax({
+                    "url": Global.url + requestPersonajes,
+                    "method": "GET",
+                    "datatype": "json",
+                    success: function(data){
+                        var html = "";
+                        $.each(data,function(index,personaje){
+                            html += "<option key='"+personaje.idPersonaje+"' value='"+personaje.idPersonaje+"'>"+personaje.nombre+"</option>";
+                        });//Cierre each
+                        $("#cajaIdPersonajeRef").html(html);
+                    }
+                });//Cierre ajax
+
+        $("#modificarPersonajes").click(function() {
+            
+            var valorIdSerie = parseInt($("#cajaIdSerieRef").val());
+            var valorIdPersonaje = parseInt($("#cajaIdPersonajeRef").val());
+
+            var datos = new Object();
+
+            datos.idSerie = valorIdSerie;
+            datos.idPersonaje = valorIdPersonaje;
+
+            var dataJson = JSON.stringify(datos);
+
+            var request = "/api/Personajes/"+valorIdPersonaje+"/"+valorIdSerie;
+
+            $.ajax({
+                "url": Global.url + request,
+                "type": "PUT",
+                "data": dataJson,
+                "contentType": "application/json",
+                success: function(){
+                    console.log("Modificado");
+                    $(location).attr('href', '/detallesPersonajes.html?idserie='+valorIdSerie);
+                }
+            }); //Cierre ajax
+        });//Cierre botonInsertar
+
+    });//Cierre document.ready
+</script>
+</html>
